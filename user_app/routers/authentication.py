@@ -5,8 +5,12 @@ from user_app.hash import verify
 from sqlalchemy.orm import Session
 
 
-router = APIRouter(tags=['Authentication'])
+router = APIRouter(
+    tags=['Authentication']
+)
 
+# check the existence of a user in db by checking his username and password and if the user exists,
+# then the access token is being created.
 @router.post('/login')
 def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
     user = db.query(models.user.User).filter(models.user.User.username == request.username).first()

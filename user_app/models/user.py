@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Date, DateTime
 from ..database import Base
 
+# sqlalchemy model which represents the model in mysql
 class User(Base):
     __tablename__ = "users"
 
