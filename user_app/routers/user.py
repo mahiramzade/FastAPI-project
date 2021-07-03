@@ -19,8 +19,14 @@ router = APIRouter(
 
 @router.post('', status_code=status.HTTP_201_CREATED)
 def create_user(request: sUser, db: Session = Depends(get_db)):
+    addresses = ''
+
+    if request.addresses:
+        for each in request.addresses:
+            addresses = addresses + each + ';'
+
     new_user = mUser(username=request.username, dob=request.dob, password=hash.hash_password(request.password),
-                     addresses=request.addresses, createdAt=datetime.datetime.now())
+                     addresses=addresses, createdAt=datetime.datetime.now())
 
     if db.query(mUser).filter(mUser.username == new_user.username).first():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='The given username already exists.')
@@ -67,7 +73,16 @@ def update_user(id, request: sUser, db: Session = Depends(get_db), current_user:
     if not user.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'The User with the id {id} is not found')
 
-    user.update(request.dict(exclude={'createdAt'}))
+    addresses = ''
+
+    if request.addresses:
+        for each in request.addresses:
+            addresses = addresses + each + ';'
+
+    # user.update(request.dict(exclude={'createdAt'}))
+    user.update({'username': request.username, 'dob': request.dob,
+                 'addresses': addresses, 'password': request.password})
+
     db.commit()
 
     return user.first()
