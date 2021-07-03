@@ -67,9 +67,7 @@ def update_user(id, request: sUser, db: Session = Depends(get_db), curren_user: 
     if not user.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'The User with the id {id} is not found')
 
-    # user.update(request.dict())
-    user.update({'username': request.username, 'dob': request.dob, 'addresses': request.addresses,
-                 'password': hash.hash_password(request.password)})
+    user.update(request.dict(exclude={'createdAt'}))
     db.commit()
 
     return user.first()
