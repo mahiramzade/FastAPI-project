@@ -4,3 +4,5 @@ sqlalchemy
 mysql-connector-python
 passlib
 bcrypt
+python-jose
+python-multipart

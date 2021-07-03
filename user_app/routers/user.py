@@ -8,12 +8,12 @@ from user_app import hash
 from user_app.models.user import User as mUser
 from user_app.schemas.user import User as sUser
 from user_app.schemas.user import ShowUser
-
+from user_app.oauth2 import get_current_user
 from user_app.database import get_db
 
 router = APIRouter(
     tags=['users'],
-    prefix='/user'
+    prefix='/user',
 )
 
 
@@ -33,12 +33,12 @@ def create_user(request: sUser, db: Session = Depends(get_db)):
 
 
 @router.get('/list', status_code=status.HTTP_200_OK, response_model=List[ShowUser])
-def get_users_list(db: Session = Depends(get_db)):
+def get_users_list(db: Session = Depends(get_db), curren_user: sUser = Depends(get_current_user)):
     return db.query(mUser).all()
 
 
 @router.get('/{id}', status_code=status.HTTP_200_OK, response_model=ShowUser)
-def get_specific_user(id, db: Session = Depends(get_db)):
+def get_specific_user(id, db: Session = Depends(get_db), curren_user: sUser = Depends(get_current_user)):
     user = db.query(mUser).filter(mUser.id == id).first()
 
     if not user:
@@ -48,7 +48,7 @@ def get_specific_user(id, db: Session = Depends(get_db)):
 
 
 @router.delete('/{id}', status_code=status.HTTP_200_OK)
-def delete_user(id, db: Session = Depends(get_db)):
+def delete_user(id, db: Session = Depends(get_db), curren_user: sUser = Depends(get_current_user)):
     user = db.query(mUser).filter(mUser.id == id)
 
     if not user.first():
@@ -61,7 +61,7 @@ def delete_user(id, db: Session = Depends(get_db)):
 
 
 @router.patch('/{id}', status_code=status.HTTP_202_ACCEPTED)
-def update_user(id, request: sUser, db: Session = Depends(get_db)):
+def update_user(id, request: sUser, db: Session = Depends(get_db), curren_user: sUser = Depends(get_current_user)):
     user = db.query(mUser).filter(mUser.id == id)
 
     if not user.first():
