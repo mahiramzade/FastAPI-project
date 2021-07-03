@@ -19,7 +19,7 @@ def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(
                             detail="Invalid Credentials")
     if not verify(user.password, request.password) and user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Incorrect password")
+                            detail="Invalid Credentials")
 
     access_token = token.create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}

@@ -17,7 +17,7 @@ class ShowUser(BaseModel):
     id: int
     username: str
     dob: datetime.date
-    addresses: Optional[List[str]] = None
+    addresses: Optional[str] = None
     createdAt: datetime.datetime
 
     class Config:
