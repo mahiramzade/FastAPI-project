@@ -14,6 +14,7 @@ class User(BaseModel):
 
 
 class ShowUser(BaseModel):
+    id: int
     username: str
     dob: datetime.date
     addresses: Optional[str] = None
