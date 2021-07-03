@@ -33,12 +33,12 @@ def create_user(request: sUser, db: Session = Depends(get_db)):
 
 
 @router.get('/list', status_code=status.HTTP_200_OK, response_model=List[ShowUser])
-def get_users_list(db: Session = Depends(get_db), curren_user: sUser = Depends(get_current_user)):
+def get_users_list(db: Session = Depends(get_db), current_user: sUser = Depends(get_current_user)):
     return db.query(mUser).all()
 
 
 @router.get('/{id}', status_code=status.HTTP_200_OK, response_model=ShowUser)
-def get_specific_user(id, db: Session = Depends(get_db), curren_user: sUser = Depends(get_current_user)):
+def get_specific_user(id, db: Session = Depends(get_db), current_user: sUser = Depends(get_current_user)):
     user = db.query(mUser).filter(mUser.id == id).first()
 
     if not user:
@@ -48,7 +48,7 @@ def get_specific_user(id, db: Session = Depends(get_db), curren_user: sUser = De
 
 
 @router.delete('/{id}', status_code=status.HTTP_200_OK)
-def delete_user(id, db: Session = Depends(get_db), curren_user: sUser = Depends(get_current_user)):
+def delete_user(id, db: Session = Depends(get_db), current_user: sUser = Depends(get_current_user)):
     user = db.query(mUser).filter(mUser.id == id)
 
     if not user.first():
@@ -61,15 +61,13 @@ def delete_user(id, db: Session = Depends(get_db), curren_user: sUser = Depends(
 
 
 @router.patch('/{id}', status_code=status.HTTP_202_ACCEPTED)
-def update_user(id, request: sUser, db: Session = Depends(get_db), curren_user: sUser = Depends(get_current_user)):
+def update_user(id, request: sUser, db: Session = Depends(get_db), current_user: sUser = Depends(get_current_user)):
     user = db.query(mUser).filter(mUser.id == id)
 
     if not user.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'The User with the id {id} is not found')
 
-    # user.update(request.dict())
-    user.update({'username': request.username, 'dob': request.dob, 'addresses': request.addresses,
-                 'password': hash.hash_password(request.password)})
+    user.update(request.dict(exclude={'createdAt'}))
     db.commit()
 
     return user.first()
